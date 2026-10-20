@@ -1,0 +1,607 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1E4FFF"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="INVICTUS"><style>body{margin:0}[hidden]{display:none!important}</style></head><body><title>Plan INVICTUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: una columna de celu, fecha arriba, pestañas abajo. Entreno / Comida / Cuerpo. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --fg:#10151C; --mut:#5A6574; --line:#DCE1E8;
+  --accent:#1E4FFF; --on-accent:#FFFFFF; --soft:#E7ECFF;
+  --p:#D0442A; --c:#B98100; --f:#1F7AC4; --ok:#1B8A55; --bad:#C23B3B;
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1117; --surface:#161C25; --fg:#EDF1F6; --mut:#93A0B2; --line:#262F3D;
+  --accent:#7B96FF; --on-accent:#0D1117; --soft:#1E2740;
+  --p:#F08266; --c:#E3B341; --f:#6DB3F2; --ok:#4CC38A; --bad:#F07A7A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1117; --surface:#161C25; --fg:#EDF1F6; --mut:#93A0B2; --line:#262F3D;
+  --accent:#7B96FF; --on-accent:#0D1117; --soft:#1E2740;
+  --p:#F08266; --c:#E3B341; --f:#6DB3F2; --ok:#4CC38A; --bad:#F07A7A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.4 var(--body);padding-inline:16px;padding-block:0 84px}
+.wrap{max-width:560px;margin-inline:auto}
+button,input,select{font:inherit;color:inherit}
+h2{font:700 1.5rem/1 var(--display);letter-spacing:.02em;text-transform:uppercase;margin:0}
+.num{font-variant-numeric:tabular-nums}
+.mut{color:var(--mut)}
+.small{font-size:.85rem}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px 8px}
+.datebar{display:flex;align-items:center;gap:8px}
+.datebar .d{flex:1;text-align:center;font:700 1.35rem/1 var(--display);text-transform:uppercase;letter-spacing:.03em}
+.ib{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-size:1.2rem;cursor:pointer}
+.sum{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:.85rem;color:var(--mut)}
+.sum b{color:var(--fg);font-weight:600}
+
+main{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.row{display:flex;align-items:center;gap:8px;min-width:0}
+.row > .grow{flex:1;min-width:0}
+.between{justify-content:space-between}
+.x{border:0;background:none;color:var(--mut);font-size:1.1rem;width:36px;height:36px;cursor:pointer;border-radius:8px}
+.x:hover{color:var(--bad)}
+
+.set{display:grid;grid-template-columns:1.6rem 1fr auto auto;gap:8px;align-items:center;padding-block:4px;border-top:1px solid var(--line)}
+.set:first-of-type{border-top:0}
+.tag{font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--accent)}
+.tag.r1{color:var(--ok)} .tag.r3{color:var(--bad)}
+
+form.add{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+form.add .full{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:2px;font-size:.78rem;color:var(--mut);min-width:0}
+input[type=text],input[type=number],input[type=search],select,textarea{width:100%;min-height:44px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{min-height:44px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600;padding-inline:16px;cursor:pointer}
+.btn.ghost{background:var(--soft);color:var(--accent)}
+.chips{display:flex;gap:6px}
+.chips label{flex:1;display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:.9rem;background:var(--bg)}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label:has(input:checked){background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+.chips label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+
+.big{font:700 2.6rem/1 var(--display)}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.macros{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.macros .m{display:flex;flex-direction:column;gap:4px;min-width:0}
+.m .n{font-weight:600} .m .n small{color:var(--mut);font-weight:400}
+.meal{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:8px}
+.meal:first-of-type{border-top:0;padding-top:0}
+.meal .t{min-width:0;overflow-wrap:anywhere}
+.k{font-weight:600}
+
+.exlist{display:flex;flex-direction:column;gap:8px}
+.ex{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:left;font-weight:600;overflow-wrap:anywhere}
+.ex.lock{background:transparent;border-style:dashed;color:var(--mut);font-weight:500}
+.ex.fin{cursor:pointer}
+.ex-open{scroll-margin-top:96px;border-color:var(--accent)}
+.srow{display:grid;grid-template-columns:1.4rem 1fr 64px 56px 44px;gap:6px;align-items:center}
+.srow.hd{font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.srow input{min-height:42px;text-align:center;padding:4px}
+.srow.pend input{color:var(--mut)}
+.dotb{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;cursor:pointer}
+.dotb i{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:block}
+.dotb i[data-r="1"]{background:var(--ok);border-color:var(--ok)}
+.dotb i[data-r="2"]{background:var(--c);border-color:var(--c)}
+.dotb i[data-r="3"]{background:var(--bad);border-color:var(--bad)}
+textarea{font:inherit;resize:vertical}
+details{border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;font-weight:600;min-height:32px;display:flex;align-items:center}
+.empty{color:var(--mut);padding:6px 0}
+table{width:100%;border-collapse:collapse}
+td,th{padding:8px 4px;border-top:1px solid var(--line);text-align:right}
+th{font-size:.75rem;color:var(--mut);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+td:first-child,th:first-child{text-align:left}
+.up{color:var(--bad)} .down{color:var(--ok)}
+
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;padding:6px 16px calc(6px + env(safe-area-inset-bottom,0px));gap:6px;z-index:6}
+nav button{flex:1;max-width:180px;margin-inline:auto;min-height:48px;border:0;border-radius:10px;background:none;font:700 1.1rem var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--mut);cursor:pointer}
+nav button[aria-current=true]{background:var(--soft);color:var(--accent)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:99px;font-size:.85rem;z-index:9}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s}}
+
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--mut)}
+.meta b{color:var(--fg);font-weight:600}
+.pics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pics figure{margin:0;display:flex;flex-direction:column;gap:4px;min-width:0}
+.pics img{width:100%;height:auto;border-radius:10px;background:var(--line);display:block}
+.pics figcaption{font-size:.75rem;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.fh h3{font:700 1.15rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:4px 0 6px}
+.fh ol,.fh ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:6px}
+.warn{border:1px solid var(--c);background:var(--soft);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.warn b{color:var(--c)}
+.glist{display:flex;flex-direction:column;gap:8px}
+.grow2{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:left;font-weight:600;cursor:pointer}
+.grow2 .sub{font-weight:400;color:var(--mut);font-size:.85rem}
+.back{align-self:flex-start}
+.ex .grow{flex:1;min-width:0;text-align:left}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="datebar">
+      <button class="ib" data-act="prev" aria-label="Día anterior">‹</button>
+      <div class="d" id="dlabel"></div>
+      <button class="ib" data-act="next" aria-label="Día siguiente">›</button>
+    </div>
+    <div class="sum num" id="sum"></div>
+  </header>
+  <main id="main"></main>
+  <p class="small mut" id="mode" style="margin-top:18px"></p>
+</div>
+<nav id="tabs"></nav>
+<div id="toast" hidden></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => { const n = parseFloat(String(v ?? '').replace(',', '.')); return Number.isFinite(n) ? n : null; };
+const r0 = n => Math.round(n).toLocaleString('es-AR');
+const r1 = n => (Math.round(n * 10) / 10).toLocaleString('es-AR');
+
+const iso = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const TODAY = iso(new Date());
+const shift = (s, n) => { const [y, m, d] = s.split('-').map(Number); return iso(new Date(y, m - 1, d + n)); };
+const fmt = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' }).replace('.', ''); };
+
+// Alimentos de ejemplo (valores por 100 g, tablas generales): corregilos con la etiqueta de lo que comprás.
+const SEED_FOODS = [
+  { id: 'huevo', name: 'Huevo entero', kcal: 143, p: 12.6, c: 0.7, f: 9.5, unitG: 50, unitName: 'huevo' },
+  { id: 'pollo', name: 'Pechuga de pollo cocida', kcal: 165, p: 31, c: 0, f: 3.6 },
+  { id: 'arroz', name: 'Arroz blanco cocido', kcal: 130, p: 2.7, c: 28, f: 0.3 },
+  { id: 'avena', name: 'Avena', kcal: 389, p: 16.9, c: 66, f: 6.9 },
+  { id: 'banana', name: 'Banana', kcal: 89, p: 1.1, c: 23, f: 0.3, unitG: 120, unitName: 'banana' },
+  { id: 'leche', name: 'Leche entera', kcal: 61, p: 3.2, c: 4.8, f: 3.3 },
+];
+/* ---------- Rutina INVICTUS (plan de Nicolás) y guía de técnica ---------- */
+const DAYS = { A: 'Día 1 · Torso', B: 'Día 2 · Piernas', C: 'Día 3 · Mixto (torso y pierna)' };
+// Formato de cada línea: Nombre SERIESxREPS[-REPS | fallo] [DESCANSOs]. Las repeticiones son las del mes 1.
+const SEED_ROUTINES = {
+  A: ['Dorsalera (agarre ancho) 3x12-15', 'Press de pecho (Hammer) 3x12-15', 'Remo bajo (agarre cerrado) 3x12-15', 'Press de hombros con mancuernas 3x12-15', 'Vuelos posteriores (Peck Fly) 3x15', 'Curl de bíceps (barra W) 3x12-15', 'Extensión de tríceps (polea con soga) 3x12-15', 'Hiperextensiones 3x15-20', 'Crunch abdominal 3x15-20'].join('\n'),
+  B: ['Belt squat a discos 4x12-15', 'Prensa a 45° 3x12-15', 'Curl femoral sentado 3x12-15', 'Sentadilla búlgara 3x10-12', 'Hip thrust guiado 3x15', 'Plancha frontal 3x30-45', 'Gemelos en prensa 3xfallo'].join('\n'),
+  C: ['Goblet squat (pesa rusa) 3x12-15', 'Dorsalera supina 3x12-15', 'Extensión de cuádriceps 3x15', 'Remo con mancuerna a una mano 3x12', 'Vuelos laterales con mancuerna 3x15', 'Aductores (máquina) 2x15', 'Abductores (de pie, a discos) 2x15', 'Elevación de rodillas 3x15-20', 'Hiperextensiones 1x15'].join('\n'),
+};
+
+// img = id del banco de imágenes (free-exercise-db). n debe coincidir con el nombre en la rutina.
+const FICHAS = [
+  { n: 'Dorsalera (agarre ancho)', img: 'Wide-Grip_Lat_Pulldown', eq: 'Dorsalera con lingotera, agarre prono ancho', m: 'Dorsal ancho, bíceps y espalda alta',
+    pasos: ['Ajustá el rodillo para que te sujete los muslos y no te levante.', 'Agarrá la barra con las palmas al frente, a la anchura de los hombros.', 'Con el pecho al frente, tirá de la barra hacia el mentón llevando los codos hacia las costillas.', 'Apretá la espalda 1 segundo abajo y volvé lento hasta estirar los brazos.'],
+    clave: ['Pecho al frente y hombros hacia abajo y atrás.', 'Es ideal para alinear la columna: el torso casi quieto.', 'Pensá en bajar los codos, no en tirar con las manos.'],
+    errores: ['Tirar con el torso hacia atrás para ayudarte.', 'Bajar la barra detrás de la nuca.', 'Encoger los hombros.', 'Soltar el peso de golpe arriba.'],
+    cuidado: 'No bajes la barra detrás de la nuca: castiga el hombro y la clavícula. Siempre al frente, hacia el mentón.' },
+  { n: 'Press de pecho (Hammer)', img: 'Leverage_Chest_Press', eq: 'Máquina Hammer de pecho a discos', m: 'Pectoral, tríceps y hombro (parte delantera)',
+    pasos: ['Ajustá el asiento para que las manijas queden a la altura del medio del pecho.', 'Sentate con la espalda y la cabeza apoyadas y los pies firmes en el piso.', 'Llevá las escápulas juntas, con los hombros hacia atrás y apoyados en el respaldo.', 'Empujá hasta estirar casi del todo los brazos, sin trabar los codos.', 'Volvé lento hasta sentir el pecho estirado.'],
+    clave: ['Mantené las escápulas juntas, con los hombros hacia atrás (indicación del profe).', 'Movimiento controlado: no estires los codos de golpe.', 'Las muñecas rectas, alineadas con los antebrazos.'],
+    errores: ['Despegar la espalda o los hombros del respaldo.', 'Estirar los codos de golpe arriba.', 'Rebotar el peso abajo.', 'Subir los hombros hacia las orejas.'],
+    cuidado: 'Se usa la Hammer para proteger la articulación de la clavícula (acromioclavicular). Si sentís dolor en la clavícula, frená y avisale al profe.' },
+  { n: 'Remo bajo (agarre cerrado)', img: 'Seated_Cable_Rows', eq: 'Remo bajo con lingotera, agarre cerrado (triángulo)', m: 'Espalda media, dorsal y bíceps',
+    pasos: ['Sentate con los pies en los apoyos y las rodillas apenas flexionadas.', 'Agarrá el triángulo con el torso casi vertical y la espalda recta.', 'Tirá llevando los codos hacia atrás, rozando las costillas.', 'Pausa de 1 segundo contrayendo la espalda.', 'Volvé estirando los brazos de forma controlada, sin redondear la espalda.'],
+    clave: ['Espalda recta todo el tiempo.', 'Los codos pasan pegados al torso.', 'El torso casi no se mueve.'],
+    errores: ['Balancear el torso adelante y atrás.', 'Encoger los hombros.', 'Redondear la zona lumbar al estirar.', 'Tirar con los brazos en vez de con la espalda.'],
+    cuidado: 'La tracción es prioridad en tu plan para fortalecer la espalda. Cuidá la postura: espalda recta y sin girar el tronco.' },
+  { n: 'Press de hombros con mancuernas', img: 'Seated_Dumbbell_Press', eq: 'Banco multiangular (inclinación de 75°) y mancuernas', m: 'Hombro, tríceps y parte alta del pecho',
+    pasos: ['Ajustá el banco a unos 75° y sentate con la espalda bien apoyada.', 'Subí las mancuernas a la altura de los hombros con las palmas enfrentadas (agarre neutro).', 'Empujá hacia arriba sin chocar las mancuernas ni trabar los codos.', 'Bajá lento hasta que los codos queden a la altura de los hombros.'],
+    clave: ['Agarre neutro (palmas mirándose) para aliviar la clavícula (indicación del profe).', 'Espalda apoyada, abdomen firme, sin arquear la zona lumbar.', 'Subí y bajá en una línea pareja, sin llevar las mancuernas hacia atrás de la cabeza.'],
+    errores: ['Arquear la espalda para empujar.', 'Dejar caer las mancuernas abajo.', 'Trabar los codos arriba.', 'Usar tanto peso que se pierde el control.'],
+    cuidado: 'Es un movimiento por encima de la cabeza. Si la clavícula molesta, bajá el peso o el recorrido y avisale al profe.' },
+  { n: 'Vuelos posteriores (Peck Fly)', img: 'Reverse_Machine_Flyes', eq: 'Máquina Peck Fly, sentado mirando hacia la máquina', m: 'Parte trasera del hombro y espalda alta',
+    pasos: ['Ajustá el asiento para que las manijas queden a la altura de los hombros.', 'Apoyá el pecho en el almohadón y agarrá las manijas con los brazos casi estirados.', 'Abrí los brazos hacia atrás y a los costados hasta quedar alineados con el torso.', 'Pausa de 1 segundo y volvé lento.'],
+    clave: ['Es fundamental para contrarrestar la postura caída.', 'Peso liviano, brazos casi estirados y codos apenas flexionados.', 'Sentí el trabajo atrás del hombro, no en el cuello.'],
+    errores: ['Usar mucho peso y balancear el cuerpo.', 'Flexionar mucho los codos (se vuelve un remo).', 'Encoger los hombros.', 'Llevar los brazos más atrás de la línea del torso.'] },
+  { n: 'Curl de bíceps (barra W)', img: 'EZ-Bar_Curl', imgNota: 'La foto es de pie con barra W. En tu plan se hace en biserie con la extensión de tríceps: el curl con barra W o con barra horizontal en polea.', eq: 'Barra W o barra horizontal en polea (biserie con tríceps)', m: 'Bíceps',
+    pasos: ['Parate con los pies al ancho de la cadera y agarrá la barra al ancho de los hombros.', 'Con los codos pegados al cuerpo, subí la barra contrayendo el bíceps.', 'Apretá 1 segundo arriba.', 'Bajá lento hasta estirar casi del todo los brazos.', 'Pasá enseguida a la extensión de tríceps, sin descanso largo (biserie).'],
+    clave: ['Codos pegados al cuerpo y quietos.', 'Bajada controlada, unos 2 segundos.', 'Espalda recta, sin balancear el tronco.'],
+    errores: ['Balancear el cuerpo para subir.', 'Adelantar los codos.', 'Dejar caer el peso abajo.', 'Arquear la zona lumbar.'] },
+  { n: 'Extensión de tríceps (polea con soga)', img: 'Triceps_Pushdown_-_Rope_Attachment', eq: 'Polea con soga (biserie con bíceps)', m: 'Tríceps',
+    pasos: ['Poné la polea arriba con la soga y parate frente a ella, con los pies al ancho de la cadera.', 'Inclinate apenas hacia adelante, con la espalda recta y los codos pegados al cuerpo.', 'Empujá hacia abajo hasta estirar por completo los brazos, separando un poco las manos al final.', 'Volvé controlado hasta que las manos lleguen a la altura del pecho.'],
+    clave: ['Codos pegados al cuerpo y quietos: solo se mueven los antebrazos.', 'Estirá del todo abajo y apretá 1 segundo.', 'Rodillas apenas flexionadas y el peso repartido en los dos pies.'],
+    errores: ['Abrir los codos hacia afuera.', 'Usar el peso del cuerpo para empujar.', 'Mover los hombros.', 'Subir rápido y sin control.'] },
+  { n: 'Hiperextensiones', img: 'Hyperextensions_Back_Extensions', eq: 'Banco de espinales', m: 'Espalda baja, glúteos e isquiotibiales',
+    pasos: ['Ajustá el apoyo de la cadera para que el banco quede justo debajo de la cadera, no en el abdomen.', 'Poné los tobillos bajo los rodillos y cruzá los brazos sobre el pecho.', 'Bajá el tronco con la espalda recta hasta sentir estirar atrás de los muslos.', 'Subí hasta quedar alineado: cuerpo recto, sin pasarte.'],
+    clave: ['Subí de forma controlada, sin arquear de más (sin hiperextender).', 'Ayuda a estabilizar la columna.', 'Movimiento lento, con el cuello en línea con la columna.'],
+    errores: ['Pasar la línea recta arqueando la zona lumbar.', 'Subir de golpe o con impulso.', 'Tirar del cuello hacia atrás.', 'Redondear la espalda abajo.'] },
+  { n: 'Crunch abdominal', img: 'Crunches', eq: 'Banco de abdominales', m: 'Abdomen',
+    pasos: ['Acostate con las rodillas flexionadas y los pies firmes.', 'Poné las manos cruzadas sobre el pecho o a los costados de la cabeza, sin tirar del cuello.', 'Hacé un crunch corto: despegá los hombros y la parte alta de la espalda.', 'Apretá el abdomen 1 segundo y bajá controlado.'],
+    clave: ['Concentrá el esfuerzo en el abdomen, no en el cuello (indicación del profe).', 'Crunch corto, sin subir todo el torso.', 'Mirá hacia arriba, con la barbilla despegada del pecho.'],
+    errores: ['Tirar del cuello con las manos.', 'Usar el impulso en vez del abdomen.', 'Subir todo el torso.', 'Arquear la lumbar al bajar.'] },
+
+  { n: 'Belt squat a discos', img: null, imgNota: 'No hay foto de esta máquina en el banco de imágenes. Pedile al profe que te muestre la posición la primera vez.', eq: 'Belt squat con cinturón y discos', m: 'Cuádriceps, glúteos y piernas en general',
+    pasos: ['Colocate el cinturón sobre la cadera, bien ajustado, con el peso colgando entre las piernas.', 'Parate sobre las plataformas con los pies al ancho de los hombros, o más abiertos si te resulta cómodo (tipo sumo).', 'Mantené la espalda recta y el pecho alto.', 'Bajá en una sentadilla profunda y controlada.', 'Subí empujando con todo el pie.'],
+    clave: ['El peso va en la cadera, no sobre los hombros: así se evita la compresión de la columna (indicación del profe).', 'Sentadilla profunda con espalda recta.', 'Las rodillas siguen la dirección de los pies.'],
+    errores: ['Redondear la espalda abajo.', 'Dejar caer las rodillas hacia adentro.', 'Rebotar abajo.', 'Cinturón flojo o mal ubicado.'],
+    cuidado: 'Es el ejercicio principal de pierna y se eligió para evitar la carga sobre la columna (escoliosis). Empezá con poco peso hasta dominar la técnica.' },
+  { n: 'Prensa a 45°', img: 'Leg_Press', eq: 'Prensa de rodamiento lineal', m: 'Cuádriceps, glúteos e isquiotibiales',
+    pasos: ['Sentate con la espalda y la cola bien apoyadas en el respaldo.', 'Poné los pies en el medio de la plataforma, al ancho de los hombros.', 'Sacá los seguros y bajá lento hasta unos 90° de rodilla.', 'Empujá con todo el pie, sin trabar las rodillas arriba.', 'Al terminar, poné bien los seguros antes de soltar.'],
+    clave: ['Bajá hasta los 90° sin que se despegue la zona lumbar del respaldo (indicación del profe).', 'Las rodillas siguen la dirección de los pies.', 'Bajada de unos 2 segundos, sin rebote.'],
+    errores: ['Bajar tanto que la zona lumbar se despega.', 'Trabar las rodillas arriba.', 'Rebotar abajo.', 'Dejar las rodillas hacia adentro.'] },
+  { n: 'Curl femoral sentado', img: 'Seated_Leg_Curl', eq: 'Sillón de femorales con lingotera', m: 'Isquiotibiales',
+    pasos: ['Ajustá el asiento para que las rodillas queden alineadas con el eje de la máquina.', 'Apoyá el rodillo detrás de los tobillos y bajá la almohadilla de los muslos.', 'Flexioná las rodillas llevando los talones hacia abajo y atrás.', 'Contracción de 1 segundo abajo y volvé lento, en unos 3 segundos.'],
+    clave: ['Ajustá bien el rodillo antes de empezar.', 'Controlá la subida de vuelta en 3 segundos (indicación del profe).', 'Espalda apoyada y pelvis quieta.'],
+    errores: ['Despegar la espalda del respaldo.', 'Usar impulso.', 'Soltar el peso al volver.', 'No bajar la almohadilla de los muslos.'] },
+  { n: 'Sentadilla búlgara', img: 'Split_Squat_with_Dumbbells', imgNota: 'La foto es de una zancada dividida con mancuernas. En la búlgara el pie de atrás va apoyado sobre un banco de soporte.', lado: 'por pierna', eq: 'Banco de soporte para búlgaras y mancuernas de fundición livianas', m: 'Cuádriceps y glúteos, un lado por vez',
+    pasos: ['Apoyá el empeine del pie de atrás sobre el banco y dejá el otro pie adelante, a un paso largo.', 'Sostené las mancuernas livianas a los costados.', 'Con el torso erguido, bajá la rodilla de atrás hacia el piso.', 'Empujá con el pie de adelante para subir.', 'Terminá todas las repeticiones de un lado y después cambiá.'],
+    clave: ['Trabajo de una pierna por vez: ayuda a estabilizar y parejar diferencias entre los dos lados.', 'Pelvis nivelada y torso erguido.', 'La rodilla de adelante sigue la dirección del pie, sin caer hacia adentro.'],
+    errores: ['Dar un paso demasiado corto o demasiado largo.', 'Inclinar el torso hacia adelante.', 'Dejar caer la rodilla hacia adentro.', 'Usar mucho peso al empezar.'],
+    cuidado: 'Hacela despacio y con mancuernas livianas hasta tener equilibrio. Podés apoyarte con una mano si hace falta.' },
+  { n: 'Hip thrust guiado', img: 'Barbell_Hip_Thrust', imgNota: 'La foto es de la versión con barra. En la máquina guiada el movimiento es el mismo.', eq: 'Máquina guiada de hip thrust', m: 'Glúteo mayor',
+    pasos: ['Apoyá la parte alta de la espalda en el respaldo y los pies al ancho de la cadera.', 'Colocá el apoyo de la máquina sobre la cadera.', 'Empujá con los talones y subí la cadera hasta alinear el tronco con los muslos.', 'Apretá los glúteos 2 segundos arriba.', 'Bajá controlado.'],
+    clave: ['Empujá desde los talones.', 'Apretá los glúteos 2 segundos arriba (indicación del profe).', 'Mentón hacia el pecho y costillas abajo: arriba no arquees la lumbar.'],
+    errores: ['Arquear la zona lumbar al llegar arriba.', 'Rebotar abajo.', 'Subir con las puntas de los pies.', 'Dejar que las rodillas se cierren.'] },
+  { n: 'Plancha frontal', img: 'Plank', unidad: 'seg', eq: 'Colchoneta', m: 'Abdomen y estabilizadores de la columna',
+    pasos: ['Apoyá los antebrazos y las puntas de los pies en la colchoneta, con los codos justo debajo de los hombros.', 'Alineá el cuerpo de la cabeza a los talones.', 'Mantené el abdomen y los glúteos tensos.', 'Aguantá entre 30 y 45 segundos respirando normal.'],
+    clave: ['Mantené el core tenso: ayuda a sostener la columna (indicación del profe).', 'Cuerpo en línea recta, sin hundir la cintura.', 'Mirada al piso, con el cuello alineado.'],
+    errores: ['Hundir la cintura.', 'Subir demasiado la cola.', 'Aguantar la respiración.', 'Encoger los hombros hacia las orejas.'],
+    cuidado: 'Si la zona lumbar se hunde o molesta, cortá la serie: es mejor una plancha más corta y bien hecha.' },
+  { n: 'Gemelos en prensa', img: 'Calf_Press_On_The_Leg_Press_Machine', eq: 'Prensa a 45°', m: 'Gemelos y sóleo',
+    pasos: ['Sentate en la prensa con las piernas casi estiradas, sin trabar las rodillas.', 'Poné las puntas de los pies en el borde inferior de la plataforma.', 'Bajá los talones para estirar al máximo.', 'Subí en puntas lo más alto que puedas y apretá 1 segundo arriba.'],
+    clave: ['Estiramiento máximo abajo y contracción arriba.', 'Las rodillas casi estiradas y fijas: se mueve solo el tobillo.', 'Repeticiones lentas, sin rebote.'],
+    errores: ['Flexionar las rodillas para empujar.', 'Rebotar abajo.', 'Usar tanto peso que el rango queda corto.', 'Trabar las rodillas con fuerza.'] },
+
+  { n: 'Goblet squat (pesa rusa)', img: 'Goblet_Squat', eq: 'Pesa rusa de 8 o 10 kg', m: 'Cuádriceps y glúteos',
+    pasos: ['Sostené la pesa rusa contra el pecho, a la altura del pecho, con las dos manos.', 'Poné los pies al ancho de los hombros, con las puntas apenas hacia afuera.', 'Bajá en una sentadilla con el torso erguido y los codos entre las rodillas.', 'Subí empujando con todo el pie.'],
+    clave: ['El peso al frente obliga a mantener el torso erguido: excelente para principiantes (indicación del profe).', 'Pecho alto y espalda recta.', 'Las rodillas siguen la dirección de los pies.'],
+    errores: ['Inclinar el torso hacia adelante.', 'Despegar los talones del piso.', 'Dejar caer las rodillas hacia adentro.', 'Dejar caer la pesa lejos del pecho.'],
+    cuidado: 'El peso va al frente y no sobre los hombros, así que no carga la columna. Bajá solo hasta donde mantengas la espalda recta.' },
+  { n: 'Dorsalera supina', img: 'Underhand_Cable_Pulldowns', eq: 'Dorsalera con lingotera, agarre supino (palmas hacia vos)', m: 'Dorsal ancho y bíceps',
+    pasos: ['Ajustá el rodillo para que te sujete los muslos.', 'Agarrá la barra con las palmas hacia vos, a la anchura de los hombros.', 'Inclinate apenas hacia atrás y tirá de la barra hacia la parte alta del pecho.', 'Apretá la espalda y volvé lento hasta estirar los brazos.'],
+    clave: ['Involucra más el bíceps y estira bien los dorsales (indicación del profe).', 'Codos hacia las costillas, pecho al frente.', 'Torso casi quieto.'],
+    errores: ['Balancear el torso.', 'Tirar solo con los brazos.', 'Encoger los hombros.', 'Soltar el peso de golpe.'] },
+  { n: 'Extensión de cuádriceps', img: 'Leg_Extensions', eq: 'Sillón de cuádriceps', m: 'Cuádriceps',
+    pasos: ['Ajustá el respaldo para que las rodillas queden alineadas con el eje de la máquina.', 'Poné el rodillo sobre la parte baja de las espinillas.', 'Con la espalda apoyada, extendé las rodillas hasta arriba, con la punta de los pies hacia arriba.', 'Contracción máxima arriba y bajada lenta.'],
+    clave: ['Punta de los pies hacia arriba y contracción máxima arriba (indicación del profe).', 'Bajada controlada, unos 2 a 3 segundos.', 'Espalda apoyada.'],
+    errores: ['Despegar la cola del asiento.', 'Usar impulso para subir.', 'Estirar de golpe y trabar la rodilla.', 'Usar tanto peso que se pierde el control.'] },
+  { n: 'Remo con mancuerna a una mano', img: 'One-Arm_Dumbbell_Row', lado: 'por brazo', eq: 'Banco plano y mancuerna', m: 'Espalda media, dorsal y bíceps',
+    pasos: ['Apoyá una mano y la rodilla del mismo lado sobre el banco plano, con la espalda recta y paralela al piso.', 'Agarrá la mancuerna con el brazo estirado.', 'Tirá la mancuerna hacia la cadera llevando el codo hacia atrás.', 'Retraé la escápula arriba y bajá controlado.', 'Terminá un lado y cambiá.'],
+    clave: ['Foco en retraer la escápula, es decir, llevarla hacia atrás.', 'Protegé la espalda baja: espalda recta, sin girar el tronco.', 'El codo pasa cerca del cuerpo.'],
+    errores: ['Girar el tronco para subir la mancuerna.', 'Redondear la espalda.', 'Usar impulso.', 'Subir la mancuerna con el hombro encogido.'],
+    cuidado: 'Mantené la espalda recta y el tronco quieto: es clave con la escoliosis.' },
+  { n: 'Vuelos laterales con mancuerna', img: 'Side_Lateral_Raise', eq: 'Mancuernas de goma de 2,5 a 5 kg para empezar', m: 'Hombro (deltoides medio)',
+    pasos: ['Parate con los pies al ancho de la cadera, las rodillas apenas flexionadas y una mancuerna en cada mano.', 'Elevá los brazos hacia los costados y levemente hacia adelante, en el plano de las escápulas.', 'Llegá hasta la línea de los hombros.', 'Bajá lento, unos 2 segundos.'],
+    clave: ['Elevá los brazos levemente hacia adelante (plano escapular) para proteger la clavícula (indicación del profe).', 'Codos apenas flexionados.', 'Pensá en llevar los codos hacia arriba, no las manos.'],
+    errores: ['Balancear el cuerpo para subir.', 'Subir por encima de la línea de los hombros.', 'Encoger el cuello y el trapecio.', 'Usar tanto peso que se pierde la forma.'],
+    cuidado: 'Si la clavícula molesta, bajá el peso o el recorrido y avisale al profe.' },
+  { n: 'Aductores (máquina)', img: 'Thigh_Adductor', eq: 'Máquina de aducción con lingotera (biserie con abductores)', m: 'Aductores (parte interna del muslo)',
+    pasos: ['Ajustá el tope para empezar con las piernas abiertas hasta un punto cómodo, sin forzar.', 'Sentate con la espalda apoyada y los pies en los apoyos.', 'Juntá las piernas lento hasta la posición neutra.', 'Pausa de 1 segundo y volvé abriendo despacio.', 'Pasá enseguida a los abductores (biserie).'],
+    clave: ['Ayuda a estabilizar la cadera.', 'Movimiento pausado: no dejes que el peso abra tus piernas de golpe.', 'Parar en la posición neutra.'],
+    errores: ['Soltar el peso y que abra las piernas de golpe.', 'Arrancar con las piernas muy abiertas.', 'Pasar la línea media.', 'Usar impulso.'] },
+  { n: 'Abductores (de pie, a discos)', img: 'Thigh_Abductor', imgNota: 'La foto muestra la máquina sentada. En tu plan se hace de pie, a discos, con el mismo movimiento de abrir la pierna hacia el costado.', eq: 'Máquina de abducción de pie, a discos (biserie con aductores)', m: 'Abductores y glúteo medio',
+    pasos: ['Parate firme, apoyándote en la máquina con las manos.', 'Ajustá el apoyo del peso sobre el muslo o el tobillo, como indique la máquina.', 'Abrí la pierna hacia el costado, sin inclinar el tronco.', 'Volvé lento y repetí; después cambiá de pierna.'],
+    clave: ['Ayuda a estabilizar la cadera.', 'Tronco erguido y pelvis quieta.', 'Movimiento lento y controlado.'],
+    errores: ['Inclinar el tronco para subir la pierna.', 'Usar impulso.', 'Soltar el peso de golpe.', 'Apoyar el peso en una sola pierna sin sostenerte.'] },
+  { n: 'Elevación de rodillas', img: 'Knee_Hip_Raise_On_Parallel_Bars', eq: 'Máquina para fondos y abdominales, colgado con apoyo de antebrazos', m: 'Abdomen bajo',
+    pasos: ['Apoyá la espalda en el respaldo y los antebrazos en los apoyos, con los hombros lejos de las orejas.', 'Dejá las piernas colgando.', 'Subí las rodillas hacia el pecho usando el abdomen.', 'Aguantá 1 segundo arriba y bajá lento.'],
+    clave: ['Alarga la columna: no subas con el balanceo del cuerpo.', 'Espalda pegada al respaldo.', 'Subí y bajá controlado.'],
+    errores: ['Balancear el cuerpo para subir.', 'Subir solo con la fuerza de las piernas.', 'Dejar caer las piernas de golpe.', 'Encoger los hombros.'] },
+];
+const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+const fichaOf = name => FICHAS.find(f => norm(f.n) === norm(name));
+
+const GUIA = [
+  { t: 'Antes de cada sesión', items: ['Día 2: calentá 5 a 8 minutos en bicicleta spinning, a intensidad moderada, para preparar las rodillas y las caderas.', 'En el primer ejercicio de cada día hacé una o dos series de aproximación con poco peso.', 'Respetá los descansos: 90 segundos el primer mes.'] },
+  { t: 'Progresión de 3 meses', items: ['Mes 1: adaptación anatómica, control motor y técnica estricta. 12 a 15 repeticiones, RPE 6 a 7 (dejás 3 o 4 repeticiones en reserva), descanso de 90 segundos.', 'Mes 2: más volumen y peso progresivo. 10 a 12 repeticiones, RPE 7 a 8 (dejás 2 o 3 en reserva), descanso de 90 a 120 segundos.', 'Mes 3: estímulo de fuerza e hipertrofia. 8 a 10 repeticiones, RPE 8 a 9 (dejás 1 o 2 en reserva), descanso de 120 segundos. Sumá 1 serie a los ejercicios principales.', 'Las repeticiones que figuran en cada ejercicio de la app son las del mes 1.'] },
+  { t: 'Cómo medir el esfuerzo (RPE)', items: ['RPE es qué tan cerca del límite terminás una serie, en una escala de 1 a 10.', 'RPE 6 a 7: te quedan 3 o 4 repeticiones en reserva.', 'RPE 8: te quedan 2 repeticiones en reserva.', 'RPE 9: te queda 1 repetición o menos.', 'Los círculos de la app (fácil, justo, duro) te sirven como referencia.'] },
+  { t: 'Cuidados con la clavícula y la columna', items: ['Clavícula: se evita el press con barra recta. Se usan agarres neutros (mancuernas con las palmas enfrentadas) y la máquina Hammer para proteger la articulación acromioclavicular.', 'En todos los empujes, la retracción escapular es obligatoria: hombros hacia atrás y escápulas juntas.', 'Escoliosis: se da prioridad a la tracción (dorsalera y remos) para fortalecer la espalda y favorecer la descompresión.', 'El belt squat es el ejercicio estrella de pierna porque evita la carga axial, es decir, el peso sobre los hombros.', 'El core (abdominales y espinales) está pautado para estabilizar la columna.'] },
+  { t: 'Frená y avisale al profe si', items: ['Sentís dolor punzante en la clavícula, el hombro o la espalda.', 'Un ejercicio te duele y no se pasa al ajustar la técnica o bajar el peso.', 'Sentís mareo, falta de aire o dolor en el pecho.'] },
+  { t: 'Sobre esta guía', items: ['Es información general. La rutina y cualquier ajuste son de tu profe: si te corrige algo distinto, se hace lo que él diga.', 'Las fotos vienen del banco libre free-exercise-db. Los textos los armamos con las indicaciones del plan INVICTUS.'] },
+];
+
+const newProfile = () => ({ foods: SEED_FOODS, exercises: [], goal: { kcal: 2200, p: 120, f: 70 }, routines: { ...SEED_ROUTINES } });
+// Si falta algún día de la rutina, se completa con el de INVICTUS (no pisa lo que ya escribiste).
+function ensureRoutines() { const r = (S.profile.routines ||= {}); let ch = false; for (const k of ['A', 'B', 'C']) if (!r[k]?.trim()) { r[k] = SEED_ROUTINES[k]; ch = true; } return ch; }
+
+const S = { tab: 'train', date: TODAY, profile: newProfile(), days: {}, selFood: null };
+const day = () => (S.days[S.date] ||= { workout: [], meals: [], weight: null, waist: null });
+
+/* ---------- Almacenamiento: db privada por usuario; si no hay sesión, localStorage ---------- */
+let mode = 'local', profileRef = null, daysCol = null, chain = Promise.resolve();
+const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+async function init() {
+  try {
+    const db = await window.claude?.use('db');
+    const user = await window.claude?.use('user');
+    const uid = user && await user.id();
+    if (db && uid) {
+      profileRef = db.doc('data/users/' + uid + '/profile');
+      daysCol = profileRef.collection('days');
+      const [p, ds] = await Promise.all([profileRef.get(), daysCol.limit(1000).get()]);
+      if (p.exists) S.profile = { ...newProfile(), ...p.data() };
+      ds.docs.forEach(d => { S.days[d.id] = d.data(); });
+      mode = 'db';
+    }
+  } catch { mode = 'local'; }
+  if (mode === 'local') {
+    S.profile = lsGet('nico:profile') || S.profile;
+    try { Object.keys(localStorage).filter(k => k.startsWith('nico:day:')).forEach(k => { S.days[k.slice('nico:day:'.length)] = lsGet(k); }); } catch {}
+  }
+  if (ensureRoutines()) save('profile');
+  $('#mode').textContent = mode === 'db'
+    ? 'Tus datos se guardan en tu cuenta y los ves igual desde cualquier dispositivo.'
+    : 'Tus datos se guardan solo en este celu y la app funciona sin internet.';
+  render();
+}
+
+function save(key) {
+  chain = chain.then(async () => {
+    if (mode === 'db') {
+      if (key === 'profile') await profileRef.set(S.profile);
+      else await daysCol.doc(key).set(S.days[key]);
+    } else lsSet(key === 'profile' ? 'nico:profile' : 'nico:day:' + key, key === 'profile' ? S.profile : S.days[key]);
+  }).catch(() => toast('No se pudo guardar. Revisá la conexión.'));
+}
+
+let tt;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, 2200); }
+
+/* ---------- Cálculos ---------- */
+const totals = d => d.meals.reduce((a, m) => ({ kcal: a.kcal + m.kcal, p: a.p + m.p, c: a.c + m.c, f: a.f + m.f }), { kcal: 0, p: 0, c: 0, f: 0 });
+const goalC = g => Math.max(0, (g.kcal - g.p * 4 - g.f * 9) / 4);
+
+function lastTime(ex) {
+  const dates = Object.keys(S.days).filter(d => d < S.date).sort().reverse();
+  for (const d of dates) { const w = S.days[d].workout.find(w => w.ex === ex && w.sets.some(s => s.rpe)); if (w) return { date: d, sets: w.sets.filter(s => s.rpe) }; }
+  return null;
+}
+
+/* ---------- Vistas ---------- */
+const LOCK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const CHECK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+const wDone = w => w.sets.length > 0 && w.sets.length >= (w.target || 0) && w.sets.every(s => s.rpe);
+const setTxt = s => `${r1(s.kg)}×${s.reps}`;
+
+function mkWorkout(ex, target = 3, reps = null, hi = null, rest = null) {
+  const last = lastTime(ex);
+  const pre = typeof reps === 'number' ? reps : null;
+  return { ex, target, lo: reps, hi, rest, sets: Array.from({ length: target }, (_, j) => {
+    const s = last && (last.sets[j] || last.sets[last.sets.length - 1]);
+    return { kg: s ? s.kg : null, reps: s ? s.reps : pre, rpe: 0 };
+  }) };
+}
+function parseRoutine(txt) {
+  return (txt || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+    const m = l.match(/^(.*?)\s+(\d+)\s*[x×]\s*(\d+|fallo)(?:\s*-\s*(\d+))?(?:\s+(\d+)\s*s(?:eg)?)?\s*$/i);
+    return m && m[1].trim() ? { ex: m[1].trim(), target: +m[2], reps: /^\d+$/.test(m[3]) ? +m[3] : 'fallo', hi: m[4] ? +m[4] : null, rest: m[5] ? +m[5] : null } : { ex: l, target: 3, reps: null, hi: null, rest: null };
+  });
+}
+// Meta de un ejercicio: "12–15 reps", "30–45 seg", "10–12 reps por pierna" o "al fallo".
+const metaOf = (name, lo, hi) => { const f = fichaOf(name); if (lo === 'fallo') return 'al fallo'; if (lo == null) return ''; return `${lo}${hi ? '–' + hi : ''} ${f?.unidad || 'reps'}${f?.lado ? ' ' + f.lado : ''}`; };
+
+function viewTrain() {
+  const d = day(), ws = d.workout;
+  const R = S.profile.routines || {};
+  const hasR = !!(R.A?.trim() || R.B?.trim() || R.C?.trim());
+  const known = [...new Set([...S.profile.exercises, ...Object.values(S.days).flatMap(x => x.workout.map(w => w.ex))])];
+  // Al abrir un día se muestra abierto el primer ejercicio pendiente; después cada uno se abre y cierra solo cuando lo tocás.
+  if (S.openFor !== S.date) { S.openFor = S.date; const f = ws.findIndex(w => !wDone(w)); S.openIdx = new Set(f >= 0 ? [f] : []); }
+
+  const list = ws.map((w, i) => {
+    const tgt = Math.max(w.target || 0, w.sets.length), n = w.sets.filter(s => s.rpe).length, done = wDone(w);
+    if (!S.openIdx.has(i)) return `<button class="ex ${done ? 'fin' : ''}" data-act="toggle" data-i="${i}" aria-expanded="false"><span class="grow">${esc(w.ex)}</span><span class="small mut num">${n}/${tgt}</span>${done ? CHECK : ''}</button>`;
+    const last = lastTime(w.ex), meta = metaOf(w.ex, w.lo, w.hi);
+    return `<section class="card ex-open">
+      <div class="row between"><h2 class="grow">${esc(w.ex)}</h2><span class="small mut num">${n}/${tgt}</span>
+        <button class="x" data-act="toggle" data-i="${i}" aria-expanded="true" aria-label="Cerrar ejercicio">▴</button>
+        <button class="x" data-act="delEx" data-i="${i}" aria-label="Quitar ejercicio">✕</button></div>
+      ${(meta || w.rest) ? `<div class="meta">${meta ? `<span>Meta: <b>${meta}</b></span>` : ''}${w.rest ? `<span>Descanso: <b>${w.rest} s</b></span>` : ''}</div>` : ''}
+      ${fichaOf(w.ex) ? `<button class="btn ghost" data-act="ficha" data-n="${esc(w.ex)}">Cómo se hace</button>` : ''}
+      <div class="srow hd"><span>#</span><span>Antes</span><span>kg</span><span>Reps</span><span></span></div>
+      ${w.sets.map((s, j) => `<div class="srow ${s.rpe ? '' : 'pend'}" data-i="${i}" data-j="${j}">
+        <span class="mut num">${j + 1}</span><span class="small mut num">${last?.sets[j] ? setTxt(last.sets[j]) : '–'}</span>
+        <input type="text" inputmode="decimal" data-f="kg" value="${s.kg ?? ''}" aria-label="Peso de la serie ${j + 1}">
+        <input type="text" inputmode="numeric" data-f="reps" value="${s.reps ?? ''}" aria-label="Repeticiones de la serie ${j + 1}">
+        <button class="dotb" data-act="dot" data-i="${i}" data-j="${j}" aria-label="Marcar serie ${j + 1}"><i data-r="${s.rpe}"></i></button></div>`).join('')}
+      <div class="small mut">Tocá el círculo: una vez fácil (verde), dos justo (amarillo), tres duro (rojo), cuatro lo desmarca.</div>
+      <div class="row"><button class="btn ghost grow" data-act="addSet" data-i="${i}">+ Serie</button>
+        ${w.sets.length > 1 ? `<button class="btn ghost" data-act="lastSet" data-i="${i}">Quitar última</button>` : ''}</div>
+    </section>`;
+  }).join('');
+
+  const start = !ws.length && hasR ? `<div class="exlist">${['A', 'B', 'C'].filter(k => R[k]?.trim()).map(k => `<button class="btn" data-act="start" data-r="${k}">Empezar: ${DAYS[k]}</button>`).join('')}</div>` : '';
+  const finished = ws.length && ws.every(wDone) ? '<div class="card" style="text-align:center"><b>Rutina completa.</b><span class="small mut">Anotá lo que quieras sumar abajo o cerrá por hoy.</span></div>' : '';
+
+  return `${list ? `<div class="exlist">${list}</div>` : (hasR ? '' : '<div class="card empty">Cargá tu rutina abajo en “Mi rutina”, o agregá un ejercicio suelto.</div>')}
+    ${start}${finished}
+    <form class="card add" data-form="addEx">
+      <label class="f full">Ejercicio suelto<input name="ex" type="text" list="exlist" autocomplete="off" placeholder="Ej: Sentadilla a cajón" required></label>
+      <datalist id="exlist">${known.map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+      <button class="btn ghost full">Agregar al final</button>
+    </form>
+    <details class="card" ${S.routOpen ?? !hasR ? 'open' : ''} data-keep="routOpen"><summary>Mi rutina</summary>
+      <form class="add" data-form="routine" style="margin-top:8px">
+        <label class="f full">${DAYS.A}. Un ejercicio por línea: nombre, series x repeticiones (ejemplo: Press banca 3x8-10)<textarea name="A" rows="8">${esc(R.A || '')}</textarea></label>
+        <label class="f full">${DAYS.B}<textarea name="B" rows="7">${esc(R.B || '')}</textarea></label>
+        <label class="f full">${DAYS.C}<textarea name="C" rows="9">${esc(R.C || '')}</textarea></label>
+        <button class="btn ghost full">Guardar rutina</button>
+      </form></details>`;
+}
+
+function picsOf(f) {
+  if (!f.img) return `<p class="small mut">${esc(f.imgNota || "")}</p>`;
+  return `<div class="pics">${[0, 1].map(n => `<figure><img src="i-${f.img}-${n}.jpg" alt="${esc(f.n)}, posición ${n ? 'final' : 'inicial'}" loading="lazy" onerror="this.closest('figure').remove()"><figcaption>${n ? 'Final' : 'Inicio'}</figcaption></figure>`).join('')}</div>${f.imgNota ? `<div class="small mut">${esc(f.imgNota)}</div>` : ''}`;
+}
+function viewGuide() {
+  if (S.fiche) {
+    const f = fichaOf(S.fiche);
+    if (f) return `<button class="btn ghost back" data-act="gback">‹ ${S.from === 'train' ? 'Volver al entreno' : 'Guía'}</button>
+      <section class="card fh">
+        <h2>${esc(f.n)}</h2>
+        <div class="meta"><span>Equipo: <b>${esc(f.eq)}</b></span><span>Trabaja: <b>${esc(f.m)}</b></span></div>
+        ${picsOf(f)}
+        ${f.cuidado ? `<div class="warn"><b>Cuidado.</b> ${esc(f.cuidado)}</div>` : ''}
+        <div><h3>Cómo se hace</h3><ol>${f.pasos.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>
+        <div><h3>Técnica correcta</h3><ul>${f.clave.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div><h3>Errores que lesionan o restan</h3><ul>${f.errores.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div class="small mut">Información general. Si el profe te indica algo distinto, se hace lo que él diga.</div>
+      </section>`;
+  }
+  const R = S.profile.routines || {};
+  const days = ['A', 'B', 'C'].map(k => `<section class="card"><h2>${DAYS[k]}</h2><div class="glist">${parseRoutine(R[k]).map(r => { const f = fichaOf(r.ex);
+    const sub = `${r.target} x ${metaOf(r.ex, r.reps, r.hi) || '?'}${r.rest ? ' · ' + r.rest + ' s' : ''}`;
+    return f ? `<button class="grow2" data-act="ficha" data-n="${esc(r.ex)}" data-from="guide"><span class="grow" style="flex:1">${esc(r.ex)}<br><span class="sub">${sub}</span></span>›</button>` : `<div class="grow2" style="cursor:default"><span style="flex:1">${esc(r.ex)}<br><span class="sub">${sub} · sin ficha</span></span></div>`; }).join('')}</div></section>`).join('');
+  const gen = GUIA.map(g => `<details class="card" ${g.t === 'Cuidados con la clavícula y la columna' ? 'open' : ''}><summary>${esc(g.t)}</summary><ul style="margin:8px 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:6px">${g.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>`).join('');
+  return `<p class="small mut" style="margin:0">Plan INVICTUS · 3 días por semana · 70 min por sesión. Tocá un ejercicio para ver cómo se hace.</p>${days}${gen}`;
+}
+
+function viewFood() {
+  const d = day(), t = totals(d), g = S.profile.goal, gc = goalC(g);
+  const bar = (v, goal, col) => `<div class="bar"><i style="width:${Math.min(100, goal ? v / goal * 100 : 0)}%;background:var(${col})"></i></div>`;
+  const m = (label, v, goal, col) => `<div class="m"><span class="small mut">${label}</span><span class="n num">${r0(v)} <small>/ ${r0(goal)} g</small></span>${bar(v, goal, col)}</div>`;
+  const foods = S.profile.foods, sel = foods.find(f => f.id === S.selFood) || foods[0];
+  const unitOpts = sel ? `<option value="g">gramos</option>${sel.unitG ? `<option value="u">${esc(sel.unitName || 'unidad')} (${r0(sel.unitG)} g)</option>` : ''}` : '';
+  const left = g.kcal - t.kcal;
+  return `<section class="card">
+      <div class="row between"><div><div class="big num">${r0(t.kcal)}</div><div class="small mut">de ${r0(g.kcal)} kcal</div></div>
+        <div class="num ${left < 0 ? 'up' : ''}" style="text-align:right"><b>${r0(Math.abs(left))}</b> <span class="small mut">${left < 0 ? 'de más' : 'restantes'}</span></div></div>
+      ${bar(t.kcal, g.kcal, '--accent')}
+      <div class="macros">${m('Proteína', t.p, g.p, '--p')}${m('Carbos', t.c, gc, '--c')}${m('Grasas', t.f, g.f, '--f')}</div>
+    </section>
+    <section class="card">
+      <h2>Lo que comiste</h2>
+      ${d.meals.length ? d.meals.map((x, i) => `<div class="meal num"><div class="t"><div>${esc(x.name)}</div><div class="small mut">${esc(x.label)} · P ${r1(x.p)} · C ${r1(x.c)} · G ${r1(x.f)}</div></div><span class="k">${r0(x.kcal)}</span><button class="x" data-act="delMeal" data-i="${i}" aria-label="Quitar">✕</button></div>`).join('') : '<div class="empty">Todavía no cargaste comidas hoy. Elegí un alimento y la cantidad.</div>'}
+      ${foods.length ? `<form class="add" data-form="addMeal">
+        <label class="f full">Alimento<select name="food" id="mealFood">${foods.map(f => `<option value="${esc(f.id)}" ${sel && f.id === sel.id ? 'selected' : ''}>${esc(f.name)}</option>`).join('')}</select></label>
+        <label class="f">Cantidad<input name="qty" type="text" inputmode="decimal" required></label>
+        <label class="f">Unidad<select name="unit" id="mealUnit">${unitOpts}</select></label>
+        <button class="btn full">Agregar</button></form>` : ''}
+      <details ${S.foodOpen ? 'open' : ''} data-keep="foodOpen"><summary>Alimento nuevo (de la etiqueta)</summary>
+        <form class="add" data-form="newFood" style="margin-top:8px">
+          <label class="f full">Nombre<input name="name" type="text" required></label>
+          <label class="f">Kcal / 100 g<input name="kcal" type="text" inputmode="decimal" required></label>
+          <label class="f">Proteína / 100 g<input name="p" type="text" inputmode="decimal" required></label>
+          <label class="f">Carbos / 100 g<input name="c" type="text" inputmode="decimal" required></label>
+          <label class="f">Grasas / 100 g<input name="f" type="text" inputmode="decimal" required></label>
+          <label class="f">Gramos por unidad (opcional)<input name="unitG" type="text" inputmode="decimal"></label>
+          <label class="f">Nombre de la unidad<input name="unitName" type="text" placeholder="huevo, rebanada…"></label>
+          <button class="btn ghost full">Guardar alimento</button>
+        </form>
+        ${foods.length ? `<div class="small mut" style="margin-top:10px">Guardados: ${foods.map(f => `${esc(f.name)} <button class="x" style="width:28px;height:28px" data-act="delFood" data-id="${esc(f.id)}" aria-label="Borrar ${esc(f.name)}">✕</button>`).join(' · ')}</div>` : ''}
+      </details>
+      <details ${S.goalOpen ? 'open' : ''} data-keep="goalOpen"><summary>Objetivo diario</summary>
+        <form class="add" data-form="goal" style="margin-top:8px">
+          <label class="f">Calorías<input name="kcal" type="text" inputmode="numeric" value="${g.kcal}" required></label>
+          <label class="f">Proteína (g)<input name="p" type="text" inputmode="numeric" value="${g.p}" required></label>
+          <label class="f">Grasas (g)<input name="f" type="text" inputmode="numeric" value="${g.f}" required></label>
+          <div class="small mut" style="align-self:end;padding-bottom:10px">Carbos: <b class="num">${r0(gc)} g</b> (el resto)</div>
+          <button class="btn ghost full">Guardar objetivo</button>
+        </form></details>
+    </section>`;
+}
+
+function viewBody() {
+  const d = day();
+  const rows = Object.keys(S.days).filter(k => S.days[k].weight || S.days[k].waist).sort();
+  const list = rows.slice(-10).reverse().map(k => {
+    const i = rows.indexOf(k), prev = rows[i - 1] && S.days[rows[i - 1]];
+    const dl = (a, b, u) => a && b ? `<span class="${a > b ? 'up' : a < b ? 'down' : ''}">${a > b ? '+' : ''}${r1(a - b)} ${u}</span>` : '';
+    const x = S.days[k];
+    return `<tr><td>${fmt(k)}</td><td class="num">${x.weight ? r1(x.weight) : '–'}<br>${prev ? dl(x.weight, prev.weight, '') : ''}</td><td class="num">${x.waist ? r1(x.waist) : '–'}<br>${prev ? dl(x.waist, prev.waist, '') : ''}</td></tr>`;
+  }).join('');
+  return `<form class="card add" data-form="body">
+      <h2 class="full">Medidas de ${S.date === TODAY ? 'hoy' : fmt(S.date)}</h2>
+      <label class="f">Peso (kg)<input name="weight" type="text" inputmode="decimal" value="${d.weight ?? ''}"></label>
+      <label class="f">Cintura en el ombligo (cm)<input name="waist" type="text" inputmode="decimal" value="${d.waist ?? ''}"></label>
+      <button class="btn full">Guardar</button>
+      <p class="small mut full" style="margin:0">Pesate en ayunas y medí la cintura una vez por semana: la balanza sola engaña en una recomposición.</p>
+    </form>
+    <section class="card"><h2>Historial</h2>
+      ${list ? `<div style="overflow-x:auto"><table><thead><tr><th>Día</th><th>Peso kg</th><th>Cintura cm</th></tr></thead><tbody>${list}</tbody></table></div>` : '<div class="empty">Cuando guardes tu primer peso o cintura, aparece acá con la diferencia contra el registro anterior.</div>'}
+    </section>`;
+}
+
+function render() {
+  const d = day(), t = totals(d), g = S.profile.goal;
+  $('#dlabel').textContent = S.date === TODAY ? 'Hoy · ' + fmt(S.date) : fmt(S.date);
+  $('#sum').innerHTML = `<span><b>${r0(t.kcal)}</b> / ${r0(g.kcal)} kcal</span><span>P <b>${r0(t.p)}</b> / ${r0(g.p)} g</span><span>${d.workout.reduce((n, w) => n + w.sets.filter(s => s.rpe).length, 0)} series</span>`;
+  $('#main').innerHTML = { train: viewTrain, guide: viewGuide, food: viewFood, body: viewBody }[S.tab]();
+  $('#tabs').innerHTML = [['train', 'Entreno'], ['guide', 'Guía'], ['food', 'Comida'], ['body', 'Cuerpo']].map(([k, l]) => `<button data-act="tab" data-t="${k}" aria-current="${S.tab === k}">${l}</button>`).join('');
+}
+
+/* ---------- Acciones ---------- */
+const act = {
+  tab: ds => { S.tab = ds.t; if (ds.t === 'guide') S.fiche = null; render(); scrollTo(0, 0); },
+  ficha: ds => { S.from = ds.from === 'guide' ? 'guide' : 'train'; S.back = S.tab; S.fiche = ds.n; S.tab = 'guide'; render(); scrollTo(0, 0); },
+  gback: () => { S.fiche = null; if (S.from === 'train') S.tab = 'train'; render(); scrollTo(0, 0); },
+  prev: () => { S.date = shift(S.date, -1); render(); },
+  next: () => { if (S.date < TODAY) { S.date = shift(S.date, 1); render(); } },
+  delEx: ds => { day().workout.splice(+ds.i, 1); S.openIdx = new Set(); save(S.date); render(); },
+  toggle: ds => { const i = +ds.i; (S.openIdx ||= new Set()); S.openIdx.has(i) ? S.openIdx.delete(i) : S.openIdx.add(i); render(); },
+  dot: ds => {
+    const row = document.querySelector('.srow[data-i="' + ds.i + '"][data-j="' + ds.j + '"]');
+    const w = day().workout[+ds.i], s = w.sets[+ds.j];
+    const kg = num(row.querySelector('[data-f=kg]').value), reps = num(row.querySelector('[data-f=reps]').value);
+    if (kg === null || !reps || reps < 1) return toast('Poné el peso y las repeticiones.');
+    const was = wDone(w);
+    s.kg = kg; s.reps = Math.round(reps); s.rpe = (s.rpe + 1) % 4;
+    const nx = w.sets[+ds.j + 1];
+    if (s.rpe && nx && !nx.rpe) { nx.kg ??= s.kg; nx.reps ??= s.reps; }
+    save(S.date); render();
+  },
+  addSet: ds => { const w = day().workout[+ds.i], l = w.sets[w.sets.length - 1]; w.sets.push({ kg: l?.kg ?? null, reps: l?.reps ?? null, rpe: 0 }); w.target = w.sets.length; save(S.date); render(); },
+  lastSet: ds => { const w = day().workout[+ds.i]; if (w.sets.length > 1) { w.sets.pop(); w.target = w.sets.length; save(S.date); render(); } },
+  start: ds => { const d = day(), first = d.workout.length; d.workout.push(...parseRoutine(S.profile.routines[ds.r]).map(r => mkWorkout(r.ex, r.target, r.reps, r.hi, r.rest))); S.openFor = S.date; S.openIdx = new Set([first]); save(S.date); render(); },
+  delMeal: ds => { day().meals.splice(+ds.i, 1); save(S.date); render(); },
+  delFood: ds => { S.profile.foods = S.profile.foods.filter(f => f.id !== ds.id); save('profile'); S.foodOpen = true; render(); },
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) act[b.dataset.act]?.(b.dataset); });
+document.addEventListener('toggle', e => { const k = e.target.dataset?.keep; if (k) S[k] = e.target.open; }, true);
+document.addEventListener('change', e => {
+  const fld = e.target.dataset?.f;
+  if (fld) {
+    const r = e.target.closest('.srow'), s = day().workout[+r.dataset.i].sets[+r.dataset.j], v = num(e.target.value);
+    s[fld] = v === null ? null : fld === 'reps' ? Math.round(v) : v; save(S.date); return;
+  }
+  if (e.target.id !== 'mealFood') return;
+  S.selFood = e.target.value;
+  const f = S.profile.foods.find(x => x.id === S.selFood);
+  $('#mealUnit').innerHTML = `<option value="g">gramos</option>${f?.unitG ? `<option value="u">${esc(f.unitName || 'unidad')} (${r0(f.unitG)} g)</option>` : ''}`;
+});
+
+const forms = {
+  addEx: fd => {
+    const ex = fd.get('ex').trim(), d = day();
+    if (!ex) return;
+    if (d.workout.some(w => w.ex.toLowerCase() === ex.toLowerCase())) return toast('Ese ejercicio ya está hoy.');
+    d.workout.push(mkWorkout(ex, 3)); (S.openIdx ||= new Set()).add(d.workout.length - 1);
+    if (!S.profile.exercises.includes(ex)) { S.profile.exercises.push(ex); save('profile'); }
+    save(S.date); render();
+  },
+  routine: fd => { S.profile.routines = { A: fd.get('A'), B: fd.get('B'), C: fd.get('C') }; S.routOpen = false; save('profile'); toast('Rutina guardada.'); render(); },
+  addMeal: fd => {
+    const f = S.profile.foods.find(x => x.id === fd.get('food')), q = num(fd.get('qty'));
+    if (!f || !q || q <= 0) return toast('Poné la cantidad.');
+    const u = fd.get('unit') === 'u' && f.unitG, g = u ? q * f.unitG : q, k = g / 100;
+    day().meals.push({ name: f.name, label: u ? `${r1(q)} ${f.unitName || 'unidad'} (${r0(g)} g)` : `${r1(g)} g`, kcal: f.kcal * k, p: f.p * k, c: f.c * k, f: f.f * k });
+    S.selFood = f.id; save(S.date); render();
+  },
+  newFood: fd => {
+    const v = k => num(fd.get(k));
+    const name = fd.get('name').trim();
+    if (!name || [v('kcal'), v('p'), v('c'), v('f')].some(x => x === null)) return toast('Completá los cuatro valores.');
+    const food = { id: 'f' + Date.now().toString(36), name, kcal: v('kcal'), p: v('p'), c: v('c'), f: v('f') };
+    if (v('unitG') > 0) { food.unitG = v('unitG'); food.unitName = fd.get('unitName').trim() || 'unidad'; }
+    S.profile.foods.push(food); S.selFood = food.id; S.foodOpen = false; save('profile'); toast('Guardado. Ya lo podés elegir arriba.'); render();
+  },
+  goal: fd => {
+    const kcal = num(fd.get('kcal')), p = num(fd.get('p')), f = num(fd.get('f'));
+    if (!kcal || p === null || f === null) return toast('Revisá los valores.');
+    S.profile.goal = { kcal, p, f }; S.goalOpen = false; save('profile'); toast('Objetivo guardado.'); render();
+  },
+  body: fd => {
+    const d = day(); d.weight = num(fd.get('weight')); d.waist = num(fd.get('waist'));
+    save(S.date); toast('Guardado.'); render();
+  },
+};
+document.addEventListener('submit', e => { e.preventDefault(); forms[e.target.dataset.form]?.(new FormData(e.target)); });
+
+// Pantalla prendida mientras estás en el gym (si el navegador lo permite).
+const wake = () => { try { navigator.wakeLock?.request('screen').catch(() => {}); } catch {} };
+document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && wake());
+wake();
+
+render();
+init();
+</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'))</script></body></html>
